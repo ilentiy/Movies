@@ -102,7 +102,7 @@ final class MovieTableViewCell: UITableViewCell {
     func updateCell(movie: Movie) {
         guard let url = URL(string: rootURL + movie.posterPath) else { return }
         posterImageView.load(url: url)
-        titleLabel.text = movie.title
+        titleLabel.text = "\(movie.title)"
         overviewLabel.text = movie.overview
         voteAverageLable.text = String(format: "%.1f", movie.voteAverage)
     }
