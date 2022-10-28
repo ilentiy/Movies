@@ -3,15 +3,17 @@
 
 import UIKit
 
-///  ячейка
+///  Прототип ячейки типа списка фильма
 final class MovieTableViewCell: UITableViewCell {
-    let posterImageView: UIImageView = {
+    // MARK: - Pivate Visual Component
+
+    private let posterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -19,7 +21,7 @@ final class MovieTableViewCell: UITableViewCell {
         return label
     }()
 
-    let overviewLabel: UILabel = {
+    private let overviewLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
@@ -27,30 +29,19 @@ final class MovieTableViewCell: UITableViewCell {
         return label
     }()
 
-    let voteAverageLable: UILabel = {
+    private let voteAverageLable: UILabel = {
         let label = UILabel()
-        label.layer.cornerRadius = 10
-        label.layer.borderWidth = 1.5
+        label.layer.cornerRadius = 15
         label.layer.borderColor = UIColor.yellow.cgColor
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 12, weight: .heavy)
         label.textColor = .label
         label.clipsToBounds = true
-        label.backgroundColor = .orange
+        label.backgroundColor = .red
         return label
     }()
 
-    let rootURL = "https://image.tmdb.org/t/p/w500"
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        setupUI()
-        setupConstraints()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
+    // MARK: - Init
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -66,6 +57,28 @@ final class MovieTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: - Public Methods
+
+    func updateCell(movie: Movie) {
+        guard let url = URL(string: BaseURL.image + movie.posterPath) else { return }
+        posterImageView.load(url: url)
+        titleLabel.text = "\(movie.title)"
+        overviewLabel.text = movie.overview
+        switch movie.voteAverage {
+        case 0 ..< 5:
+            voteAverageLable.backgroundColor = .red
+        case 5 ..< 7:
+            voteAverageLable.backgroundColor = .orange
+        case 7 ... 10:
+            voteAverageLable.backgroundColor = .systemGreen
+        default:
+            voteAverageLable.backgroundColor = .clear
+        }
+        voteAverageLable.text = String(format: "%.1f", movie.voteAverage)
+    }
+
+    // MARK: - Private Methods
 
     private func setupUI() {
         addSubview(posterImageView)
@@ -87,23 +100,15 @@ final class MovieTableViewCell: UITableViewCell {
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             titleLabel.heightAnchor.constraint(equalToConstant: 35),
 
+            voteAverageLable.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+            voteAverageLable.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            voteAverageLable.widthAnchor.constraint(equalTo: posterImageView.widthAnchor, multiplier: 0.2),
+            voteAverageLable.heightAnchor.constraint(equalTo: voteAverageLable.widthAnchor),
+
             overviewLabel.leadingAnchor.constraint(equalTo: posterImageView.trailingAnchor, constant: 10),
-            overviewLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 5),
+            overviewLabel.topAnchor.constraint(equalTo: voteAverageLable.bottomAnchor, constant: 5),
             overviewLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
             overviewLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
-
-            voteAverageLable.trailingAnchor.constraint(equalTo: posterImageView.trailingAnchor),
-            voteAverageLable.bottomAnchor.constraint(equalTo: posterImageView.bottomAnchor),
-            voteAverageLable.widthAnchor.constraint(equalTo: posterImageView.widthAnchor, multiplier: 0.2),
-            voteAverageLable.heightAnchor.constraint(equalTo: voteAverageLable.widthAnchor)
         ])
-    }
-
-    func updateCell(movie: Movie) {
-        guard let url = URL(string: rootURL + movie.posterPath) else { return }
-        posterImageView.load(url: url)
-        titleLabel.text = "\(movie.title)"
-        overviewLabel.text = movie.overview
-        voteAverageLable.text = String(format: "%.1f", movie.voteAverage)
     }
 }

@@ -5,7 +5,9 @@ import UIKit
 
 /// Информация о фильме
 final class MainInfoTableViewCell: UITableViewCell {
-    let titleLabel: UILabel = {
+    // MARK: - Private Visual Components
+
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
@@ -14,7 +16,7 @@ final class MainInfoTableViewCell: UITableViewCell {
         return label
     }()
 
-    let originalTitleLabel: UILabel = {
+    private let originalTitleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
@@ -23,7 +25,7 @@ final class MainInfoTableViewCell: UITableViewCell {
         return label
     }()
 
-    let taglineLabel: UILabel = {
+    private let taglineLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textColor = .systemGray
@@ -32,7 +34,7 @@ final class MainInfoTableViewCell: UITableViewCell {
         return label
     }()
 
-    let genresLabel: UILabel = {
+    private let genresLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -42,7 +44,7 @@ final class MainInfoTableViewCell: UITableViewCell {
         return label
     }()
 
-    let overviewLabel: UILabel = {
+    private let overviewLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.numberOfLines = 0
@@ -51,26 +53,26 @@ final class MainInfoTableViewCell: UITableViewCell {
         return label
     }()
 
-    let runtimeLabel: UILabel = {
+    private let runtimeLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.font = .systemFont(ofSize: 13, weight: .semibold)
         label.textColor = .label
         label.clipsToBounds = true
         label.backgroundColor = .clear
         return label
     }()
 
-//    override func awakeFromNib() {
-//        super.awakeFromNib()
-//        setupUI()
-//        setupConstraints()
-//    }
-//
-//    override func setSelected(_ selected: Bool, animated: Bool) {
-//        super.setSelected(selected, animated: animated)
-//    }
+    private let clockImage: UIImageView = {
+        let clockImage = UIImageView(image: UIImage(systemName: "clock"))
+        clockImage.translatesAutoresizingMaskIntoConstraints = false
+        clockImage.contentMode = .scaleAspectFill
+        clockImage.tintColor = .gray
+        return clockImage
+    }()
+
+    // MARK: - Init
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -83,40 +85,7 @@ final class MainInfoTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func setupUI() {
-        addSubview(overviewLabel)
-        addSubview(titleLabel)
-        addSubview(originalTitleLabel)
-        addSubview(genresLabel)
-        addSubview(taglineLabel)
-        addSubview(runtimeLabel)
-    }
-
-    private func setupConstraints() {
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-
-            originalTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 0),
-            originalTitleLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
-
-            runtimeLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
-            runtimeLabel.topAnchor.constraint(equalTo: originalTitleLabel.bottomAnchor, constant: 10),
-
-            genresLabel.topAnchor.constraint(equalTo: runtimeLabel.bottomAnchor, constant: 1),
-            genresLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
-
-            taglineLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            taglineLabel.topAnchor.constraint(equalTo: genresLabel.bottomAnchor, constant: 10),
-            taglineLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-
-            overviewLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            overviewLabel.topAnchor.constraint(equalTo: taglineLabel.bottomAnchor, constant: 10),
-            overviewLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            overviewLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
-        ])
-    }
+    // MARK: - Public Methods
 
     func updateCell(movie: MovieDetail) {
         var genresSring = ""
@@ -124,7 +93,6 @@ final class MainInfoTableViewCell: UITableViewCell {
         for genre in movie.genres {
             genresSring.append(genre.name + " ")
         }
-
         runtimeLabel.text = String(format: "%d ч. %d мин.", movie.runtime / 60, movie.runtime % 60)
 
         titleLabel.attributedText = NSMutableAttributedString().bold("\(movie.title)")
@@ -139,5 +107,47 @@ final class MainInfoTableViewCell: UITableViewCell {
             NSMutableAttributedString()
                 .bold("Описание\n")
                 .normal("\n\(movie.overview)")
+    }
+
+    // MARK: - Private Methods
+
+    private func setupUI() {
+        addSubview(overviewLabel)
+        addSubview(titleLabel)
+        addSubview(originalTitleLabel)
+        addSubview(genresLabel)
+        addSubview(taglineLabel)
+        addSubview(runtimeLabel)
+        addSubview(clockImage)
+    }
+
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+
+            originalTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 0),
+            originalTitleLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
+
+            runtimeLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor, constant: 10),
+            runtimeLabel.topAnchor.constraint(equalTo: originalTitleLabel.bottomAnchor, constant: 10),
+
+            clockImage.centerYAnchor.constraint(equalTo: runtimeLabel.centerYAnchor),
+            clockImage.trailingAnchor.constraint(equalTo: runtimeLabel.leadingAnchor, constant: -5),
+            clockImage.heightAnchor.constraint(equalTo: runtimeLabel.heightAnchor),
+
+            genresLabel.topAnchor.constraint(equalTo: runtimeLabel.bottomAnchor, constant: 5),
+            genresLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
+
+            taglineLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            taglineLabel.topAnchor.constraint(equalTo: genresLabel.bottomAnchor, constant: 10),
+            taglineLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+
+            overviewLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            overviewLabel.topAnchor.constraint(equalTo: taglineLabel.bottomAnchor, constant: 10),
+            overviewLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            overviewLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -15),
+        ])
     }
 }

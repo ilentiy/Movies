@@ -14,7 +14,7 @@ struct Results: Codable {
     }
 }
 
-///  фильм
+///  Фильм
 struct Movie: Codable {
     let adult: Bool
     let genreIDS: [Int]
@@ -85,6 +85,5 @@ struct MovieDetail: Codable {
 
 /// Жанр
 struct Genre: Codable {
-    // let id: Int
     let name: String
 }

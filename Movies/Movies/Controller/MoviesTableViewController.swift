@@ -7,7 +7,7 @@ import UIKit
 final class MoviesTableViewController: UITableViewController {
     // MARK: - Private Visual Component
 
-    lazy var popularButton: UIButton = {
+    private lazy var popularButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Популярное", for: .normal)
@@ -17,7 +17,7 @@ final class MoviesTableViewController: UITableViewController {
         return button
     }()
 
-    lazy var topButton: UIButton = {
+    private lazy var topButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("В топе", for: .normal)
@@ -27,7 +27,7 @@ final class MoviesTableViewController: UITableViewController {
         return button
     }()
 
-    lazy var upcommingButton: UIButton = {
+    private lazy var upcommingButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Скоро", for: .normal)
@@ -37,7 +37,7 @@ final class MoviesTableViewController: UITableViewController {
         return button
     }()
 
-    let stackView: UIStackView = {
+    private let stackView: UIStackView = {
         let view = UIStackView()
         view.axis = NSLayoutConstraint.Axis.horizontal
         view.distribution = UIStackView.Distribution.fillEqually
@@ -50,7 +50,6 @@ final class MoviesTableViewController: UITableViewController {
 
     // MARK: - Private Property
 
-    let cellReuseIdendifier = "cell"
     let sessionConfiguration = URLSessionConfiguration.default
     let decoder = JSONDecoder()
     var movies: [Movie] = []
@@ -63,7 +62,7 @@ final class MoviesTableViewController: UITableViewController {
         super.viewDidLoad()
         guard let url =
             URL(
-                string: "https://api.themoviedb.org/3/movie/popular?api_key=5e95e9b030369d612dfb2d6ecdfb4cf2&language=ru-RU"
+                string: BaseURL.movies + Category.popular + BaseURL.apiKey
             )
         else { return }
         obtainMovieList(url: url)
@@ -76,51 +75,16 @@ final class MoviesTableViewController: UITableViewController {
 
     private func setupUI() {
         navigationController?.navigationBar.isTranslucent = false
+        title = "Список Фильмов"
+        view.addSubview(stackView)
+        refreshControl = UIRefreshControl()
         stackView.addArrangedSubview(popularButton)
         stackView.addArrangedSubview(topButton)
         stackView.addArrangedSubview(upcommingButton)
-        view.addSubview(stackView)
-        refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
     }
 
-    @objc private func refreshAction() {
-        tableView.refreshControl?.beginRefreshing()
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-        }
-        tableView.refreshControl?.endRefreshing()
-    }
-
-    @objc private func changeCollection(_ button: UIButton) {
-        var url: URL?
-        switch button.tag {
-        case 0:
-            url =
-                URL(
-                    string: "https://api.themoviedb.org/3/movie/popular?api_key=5e95e9b030369d612dfb2d6ecdfb4cf2&language=ru-RU"
-                )
-        case 1:
-            url =
-                URL(
-                    string: "https://api.themoviedb.org/3/movie/top_rated?api_key=5e95e9b030369d612dfb2d6ecdfb4cf2&language=ru-RU"
-                )
-        case 2:
-            url =
-                URL(
-                    string: "https://api.themoviedb.org/3/movie/upcoming?api_key=5e95e9b030369d612dfb2d6ecdfb4cf2&language=ru-RU"
-                )
-        default:
-            url =
-                URL(
-                    string: "https://api.themoviedb.org/3/movie/popular?api_key=5e95e9b030369d612dfb2d6ecdfb4cf2&language=ru-RU"
-                )
-        }
-        guard let url = url else { return }
-        obtainMovieList(url: url)
-    }
-
-    func obtainMovieList(url: URL) {
+    private func obtainMovieList(url: URL) {
         session.dataTask(with: url) { [weak self] data, _, error in
             guard let self = self else { return }
             if let error = error {
@@ -140,11 +104,12 @@ final class MoviesTableViewController: UITableViewController {
         }.resume()
     }
 
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .systemBackground
+        tableView.contentInset = UIEdgeInsets(top: 80, left: 0, bottom: 0, right: 0)
         tableView.register(
             MovieTableViewCell.self,
-            forCellReuseIdentifier: cellReuseIdendifier
+            forCellReuseIdentifier: Identifiers.cell
         )
     }
 
@@ -153,9 +118,44 @@ final class MoviesTableViewController: UITableViewController {
             stackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             stackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-
             stackView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2),
         ])
+    }
+
+    @objc private func refreshAction() {
+        tableView.refreshControl?.beginRefreshing()
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+        tableView.refreshControl?.endRefreshing()
+    }
+
+    @objc private func changeCollection(_ button: UIButton) {
+        var url: URL?
+        switch button.tag {
+        case 0:
+            url =
+                URL(
+                    string: BaseURL.movies + Category.popular + BaseURL.apiKey
+                )
+        case 1:
+            url =
+                URL(
+                    string: BaseURL.movies + Category.top + BaseURL.apiKey
+                )
+        case 2:
+            url =
+                URL(
+                    string: BaseURL.movies + Category.upcoming + BaseURL.apiKey
+                )
+        default:
+            url =
+                URL(
+                    string: BaseURL.movies + Category.popular + BaseURL.apiKey
+                )
+        }
+        guard let url = url else { return }
+        obtainMovieList(url: url)
     }
 
     // MARK: - Table view data source
@@ -166,7 +166,7 @@ final class MoviesTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let movie = movies[indexPath.row]
-        let cell = MovieTableViewCell(style: .default, reuseIdentifier: cellReuseIdendifier)
+        let cell = MovieTableViewCell(style: .default, reuseIdentifier: Identifiers.cell)
         cell.updateCell(movie: movie)
         return cell
     }

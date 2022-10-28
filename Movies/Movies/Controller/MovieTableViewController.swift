@@ -5,10 +5,7 @@ import UIKit
 
 /// Экран Фильма
 final class MovieTableViewController: UITableViewController {
-    private enum Idendifier {
-        static let headerImage = "HeaderImage"
-        static let mainInfo = "MainInfo"
-    }
+    // MARK: - Constants
 
     private enum TableCellTypes {
         case headerImage
@@ -33,6 +30,8 @@ final class MovieTableViewController: UITableViewController {
         setupUI()
         configureUI()
     }
+
+    // MARK: - Public Methods
 
     func obtainMovie(id: Int) {
         guard let url =
@@ -76,14 +75,14 @@ final class MovieTableViewController: UITableViewController {
 
     private func configureUI() {
         view.backgroundColor = .systemBackground
-
+        navigationController?.navigationBar.tintColor = .label
         tableView.register(
             HeaderImageTableViewCell.self,
-            forCellReuseIdentifier: Idendifier.headerImage
+            forCellReuseIdentifier: Identifiers.headerImage
         )
         tableView.register(
             MainInfoTableViewCell.self,
-            forCellReuseIdentifier: Idendifier.mainInfo
+            forCellReuseIdentifier: Identifiers.mainInfo
         )
     }
 
@@ -102,11 +101,11 @@ final class MovieTableViewController: UITableViewController {
         let type = tableCellTypes[indexPath.section]
         switch type {
         case .headerImage:
-            let cell = HeaderImageTableViewCell(style: .default, reuseIdentifier: Idendifier.headerImage)
+            let cell = HeaderImageTableViewCell(style: .default, reuseIdentifier: Identifiers.headerImage)
             cell.updateCell(movie: movie)
             return cell
         case .description:
-            let cell = MainInfoTableViewCell(style: .default, reuseIdentifier: Idendifier.mainInfo)
+            let cell = MainInfoTableViewCell(style: .default, reuseIdentifier: Identifiers.mainInfo)
             cell.updateCell(movie: movie)
             return cell
         }

@@ -13,8 +13,8 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     ) {
         guard let applicationScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: applicationScene)
-        let vc = MoviesTableViewController()
-        let navigationController = UINavigationController(rootViewController: vc)
+        let viewController = MoviesTableViewController()
+        let navigationController = UINavigationController(rootViewController: viewController)
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }

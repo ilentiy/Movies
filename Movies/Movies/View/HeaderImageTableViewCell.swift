@@ -3,9 +3,11 @@
 
 import UIKit
 
-/// Картинка
+/// Ячейка с постером
 class HeaderImageTableViewCell: UITableViewCell {
-    let posterImageView: UIImageView = {
+    // MARK: - Pivate Visual Component
+
+    private let posterImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.borderWidth = 0.75
@@ -13,13 +15,13 @@ class HeaderImageTableViewCell: UITableViewCell {
         return imageView
     }()
 
-    let backdropImageView: UIImageView = {
+    private let backdropImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -27,7 +29,7 @@ class HeaderImageTableViewCell: UITableViewCell {
         return label
     }()
 
-    let overviewLabel: UILabel = {
+    private let overviewLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
@@ -35,7 +37,7 @@ class HeaderImageTableViewCell: UITableViewCell {
         return label
     }()
 
-    let voteAverageLable: UILabel = {
+    private let voteAverageLable: UILabel = {
         let label = UILabel()
         label.layer.cornerRadius = 10
         label.layer.borderWidth = 1.5
@@ -48,17 +50,7 @@ class HeaderImageTableViewCell: UITableViewCell {
         return label
     }()
 
-    let rootURL = "https://image.tmdb.org/t/p/w500"
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        setupUI()
-        setupConstraints()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
+    // MARK: - Init
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -72,6 +64,18 @@ class HeaderImageTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: - Public Methods
+
+    func updateCell(movie: MovieDetail) {
+        guard let posterURL = URL(string: BaseURL.image + movie.posterPath),
+              let backdropPathURL = URL(string: BaseURL.image + movie.backdropPath)
+        else { return }
+        posterImageView.load(url: posterURL)
+        backdropImageView.load(url: backdropPathURL)
+    }
+
+    // MARK: - Private Methods
 
     private func setupUI() {
         addSubview(backdropImageView)
@@ -91,13 +95,5 @@ class HeaderImageTableViewCell: UITableViewCell {
             posterImageView.heightAnchor.constraint(equalTo: backdropImageView.heightAnchor, multiplier: 0.75),
             posterImageView.widthAnchor.constraint(equalTo: posterImageView.heightAnchor, multiplier: 0.66),
         ])
-    }
-
-    func updateCell(movie: MovieDetail) {
-        guard let posterURL = URL(string: rootURL + movie.posterPath),
-              let backdropPathURL = URL(string: rootURL + movie.backdropPath)
-        else { return }
-        posterImageView.load(url: posterURL)
-        backdropImageView.load(url: backdropPathURL)
     }
 }
