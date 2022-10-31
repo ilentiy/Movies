@@ -25,3 +25,16 @@ enum Identifiers {
     static let credit = "Credits"
     static let cell = "Cell"
 }
+
+/// Тайтлы
+enum Title {
+    enum Button {
+        static let popular = "Популярное"
+        static let top = "В топе"
+        static let upcomming = "Скоро"
+    }
+
+    enum Screen {
+        static let movieList = "Список Фильмов"
+    }
+}

@@ -6,11 +6,11 @@ import Foundation
 /// Результат запроса
 struct Results: Codable {
     let page: Int
-    let results: [Movie]
+    let movies: [Movie]
 
     enum CodingKeys: String, CodingKey {
         case page
-        case results
+        case movies = "results"
     }
 }
 
@@ -40,7 +40,6 @@ struct Movie: Codable {
 
 /// Подробная Информация о фильме
 struct MovieDetail: Codable {
-    let adult: Bool
     let backdropPath: String
     let budget: Int
     let genres: [Genre]
@@ -61,7 +60,6 @@ struct MovieDetail: Codable {
     let voteCount: Int
 
     enum CodingKeys: String, CodingKey {
-        case adult
         case backdropPath = "backdrop_path"
         case budget
         case genres

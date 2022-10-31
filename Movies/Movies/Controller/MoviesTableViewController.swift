@@ -10,7 +10,7 @@ final class MoviesTableViewController: UITableViewController {
     private lazy var popularButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Популярное", for: .normal)
+        button.setTitle(Title.Button.popular, for: .normal)
         button.backgroundColor = .red
         button.tag = 0
         button.addTarget(self, action: #selector(changeCollection), for: .touchUpInside)
@@ -20,7 +20,7 @@ final class MoviesTableViewController: UITableViewController {
     private lazy var topButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("В топе", for: .normal)
+        button.setTitle(Title.Button.top, for: .normal)
         button.backgroundColor = .red
         button.tag = 1
         button.addTarget(self, action: #selector(changeCollection), for: .touchUpInside)
@@ -30,7 +30,7 @@ final class MoviesTableViewController: UITableViewController {
     private lazy var upcommingButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Скоро", for: .normal)
+        button.setTitle(Title.Button.upcomming, for: .normal)
         button.backgroundColor = .red
         button.tag = 2
         button.addTarget(self, action: #selector(changeCollection), for: .touchUpInside)
@@ -60,12 +60,7 @@ final class MoviesTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let url =
-            URL(
-                string: BaseURL.movies + Category.popular + BaseURL.apiKey
-            )
-        else { return }
-        obtainMovieList(url: url)
+        obtainMovieList(category: Category.popular)
         setupUI()
         setupConstraints()
         configureUI()
@@ -75,7 +70,7 @@ final class MoviesTableViewController: UITableViewController {
 
     private func setupUI() {
         navigationController?.navigationBar.isTranslucent = false
-        title = "Список Фильмов"
+        title = Title.Screen.movieList
         view.addSubview(stackView)
         refreshControl = UIRefreshControl()
         stackView.addArrangedSubview(popularButton)
@@ -84,7 +79,12 @@ final class MoviesTableViewController: UITableViewController {
         tableView.refreshControl?.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
     }
 
-    private func obtainMovieList(url: URL) {
+    private func obtainMovieList(category: String) {
+        guard let url =
+            URL(
+                string: BaseURL.movies + category + BaseURL.apiKey
+            )
+        else { return }
         session.dataTask(with: url) { [weak self] data, _, error in
             guard let self = self else { return }
             if let error = error {
@@ -93,7 +93,7 @@ final class MoviesTableViewController: UITableViewController {
 
             if let data = data {
                 do {
-                    self.movies = try JSONDecoder().decode(Results.self, from: data).results
+                    self.movies = try JSONDecoder().decode(Results.self, from: data).movies
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
                     }
@@ -122,6 +122,14 @@ final class MoviesTableViewController: UITableViewController {
         ])
     }
 
+    private func giveMovieID(index: Int) {
+        let movieID = movies[index].id
+        let movieViewController = MovieTableViewController()
+        movieViewController.movieID = movieID
+        modalPresentationStyle = .fullScreen
+        navigationController?.pushViewController(movieViewController, animated: true)
+    }
+
     @objc private func refreshAction() {
         tableView.refreshControl?.beginRefreshing()
         DispatchQueue.main.async {
@@ -131,31 +139,21 @@ final class MoviesTableViewController: UITableViewController {
     }
 
     @objc private func changeCollection(_ button: UIButton) {
-        var url: URL?
+        let category: String
         switch button.tag {
         case 0:
-            url =
-                URL(
-                    string: BaseURL.movies + Category.popular + BaseURL.apiKey
-                )
+            category = Category.popular
+
         case 1:
-            url =
-                URL(
-                    string: BaseURL.movies + Category.top + BaseURL.apiKey
-                )
+            category = Category.top
+
         case 2:
-            url =
-                URL(
-                    string: BaseURL.movies + Category.upcoming + BaseURL.apiKey
-                )
+            category = Category.upcoming
+
         default:
-            url =
-                URL(
-                    string: BaseURL.movies + Category.popular + BaseURL.apiKey
-                )
+            category = Category.popular
         }
-        guard let url = url else { return }
-        obtainMovieList(url: url)
+        obtainMovieList(category: category)
     }
 
     // MARK: - Table view data source
@@ -172,10 +170,6 @@ final class MoviesTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let movieId = movies[indexPath.row].id
-        let movieViewController = MovieTableViewController()
-        movieViewController.movieID = movieId
-        modalPresentationStyle = .fullScreen
-        navigationController?.pushViewController(movieViewController, animated: true)
+        giveMovieID(index: indexPath.row)
     }
 }

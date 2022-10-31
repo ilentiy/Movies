@@ -64,7 +64,7 @@ final class MainInfoTableViewCell: UITableViewCell {
         return label
     }()
 
-    private let clockImage: UIImageView = {
+    private let clockImageView: UIImageView = {
         let clockImage = UIImageView(image: UIImage(systemName: "clock"))
         clockImage.translatesAutoresizingMaskIntoConstraints = false
         clockImage.contentMode = .scaleAspectFill
@@ -77,7 +77,6 @@ final class MainInfoTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
-        setupConstraints()
     }
 
     @available(*, unavailable)
@@ -118,32 +117,63 @@ final class MainInfoTableViewCell: UITableViewCell {
         addSubview(genresLabel)
         addSubview(taglineLabel)
         addSubview(runtimeLabel)
-        addSubview(clockImage)
+        addSubview(clockImageView)
+        titleLabelConstraints()
+        originalTitleLabelConstraints()
+        runtimeLabelConstraints()
+        clockImageViewConstraints()
+        genresLabelConstraints()
+        taglineLabelConstraints()
+        overviewLabelConstraints()
     }
 
-    private func setupConstraints() {
+    private func titleLabelConstraints() {
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 10),
             titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+        ])
+    }
 
+    private func originalTitleLabelConstraints() {
+        NSLayoutConstraint.activate([
             originalTitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 0),
             originalTitleLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
+        ])
+    }
 
+    private func runtimeLabelConstraints() {
+        NSLayoutConstraint.activate([
             runtimeLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor, constant: 10),
             runtimeLabel.topAnchor.constraint(equalTo: originalTitleLabel.bottomAnchor, constant: 10),
+        ])
+    }
 
-            clockImage.centerYAnchor.constraint(equalTo: runtimeLabel.centerYAnchor),
-            clockImage.trailingAnchor.constraint(equalTo: runtimeLabel.leadingAnchor, constant: -5),
-            clockImage.heightAnchor.constraint(equalTo: runtimeLabel.heightAnchor),
+    private func clockImageViewConstraints() {
+        NSLayoutConstraint.activate([
+            clockImageView.centerYAnchor.constraint(equalTo: runtimeLabel.centerYAnchor),
+            clockImageView.trailingAnchor.constraint(equalTo: runtimeLabel.leadingAnchor, constant: -5),
+            clockImageView.heightAnchor.constraint(equalTo: runtimeLabel.heightAnchor),
+        ])
+    }
 
+    private func genresLabelConstraints() {
+        NSLayoutConstraint.activate([
             genresLabel.topAnchor.constraint(equalTo: runtimeLabel.bottomAnchor, constant: 5),
             genresLabel.centerXAnchor.constraint(equalTo: titleLabel.centerXAnchor),
+        ])
+    }
 
+    private func taglineLabelConstraints() {
+        NSLayoutConstraint.activate([
             taglineLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             taglineLabel.topAnchor.constraint(equalTo: genresLabel.bottomAnchor, constant: 10),
             taglineLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+        ])
+    }
 
+    private func overviewLabelConstraints() {
+        NSLayoutConstraint.activate([
             overviewLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
             overviewLabel.topAnchor.constraint(equalTo: taglineLabel.bottomAnchor, constant: 10),
             overviewLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),

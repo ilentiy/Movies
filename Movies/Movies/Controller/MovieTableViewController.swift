@@ -8,18 +8,18 @@ final class MovieTableViewController: UITableViewController {
     // MARK: - Constants
 
     private enum TableCellTypes {
-        case headerImage
+        case header
         case description
     }
 
     // MARK: - Private Property
 
-    private let tableCellTypes: [TableCellTypes] = [.headerImage, .description]
+    private let tableCellTypes: [TableCellTypes] = [.header, .description]
 
     let sessionConfiguration = URLSessionConfiguration.default
     let decoder = JSONDecoder()
     var movieID: Int?
-    var movie: MovieDetail?
+    var movieDetail: MovieDetail?
     lazy var session = URLSession.shared
 
     // MARK: - Life Cycle
@@ -36,17 +36,17 @@ final class MovieTableViewController: UITableViewController {
     func obtainMovie(id: Int) {
         guard let url =
             URL(
-                string: "https://api.themoviedb.org/3/movie/\(id)?api_key=5e95e9b030369d612dfb2d6ecdfb4cf2&language=ru-RU"
+                string: BaseURL.movies + "\(id)" + BaseURL.apiKey
             ) else { return }
         session.dataTask(with: url) { [weak self] data, _, error in
             guard let self = self else { return }
             if let error = error {
-                print("Error")
+                print(error)
             }
 
             if let data = data {
                 do {
-                    self.movie = try JSONDecoder().decode(MovieDetail.self, from: data)
+                    self.movieDetail = try JSONDecoder().decode(MovieDetail.self, from: data)
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
                     }
@@ -97,10 +97,10 @@ final class MovieTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let movie = movie else { return UITableViewCell() }
+        guard let movie = movieDetail else { return UITableViewCell() }
         let type = tableCellTypes[indexPath.section]
         switch type {
-        case .headerImage:
+        case .header:
             let cell = HeaderImageTableViewCell(style: .default, reuseIdentifier: Identifiers.headerImage)
             cell.updateCell(movie: movie)
             return cell
